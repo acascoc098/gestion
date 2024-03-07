@@ -7,7 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,7 +31,11 @@ public class Usuario {
     @Column(length = 100)
     private String password;
     @Column(length = 9)
-    private int numero;
+    private int telefono;
+
+    @OneToMany
+    @JoinColumn(name = "usuario_id")
+    private List<Matricula> matriculas;
     @ManyToMany
     private List<Rol> roles;
 }

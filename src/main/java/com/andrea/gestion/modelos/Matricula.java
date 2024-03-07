@@ -1,14 +1,16 @@
 package com.andrea.gestion.modelos;
 
-import java.util.List;
+
+
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,7 +25,13 @@ public class Matricula {
     @OneToOne
     private Asignatura asignatura;
 
-    @OneToMany
-    @JoinColumn(name = "usuario_id")
-    private List<Usuario> usuarios;
+    @ManyToOne
+    private Usuario usuario;
+
+    @Transient
+    public String getRolUsuario() {
+        return this.usuario.getRoles().stream()
+                .map(Rol::getNombre)
+                .collect(Collectors.joining(", "));
+    }
 }

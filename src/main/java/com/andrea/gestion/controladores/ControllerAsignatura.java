@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.andrea.gestion.modelos.Asignatura;
+import com.andrea.gestion.modelos.Matricula;
 import com.andrea.gestion.repos.RepoAsignatura;
+import com.andrea.gestion.repos.RepoMatricula;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -25,6 +27,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ControllerAsignatura {
     @Autowired
     RepoAsignatura repoAsignatura;
+
+    @Autowired
+    RepoMatricula repoMatricula;
 
     @GetMapping("")
     public String findAll(Model modelo) {
@@ -68,14 +73,25 @@ public class ControllerAsignatura {
     
 
     @PostMapping("/delete/{id}")
-    public String delete(
-            @PathVariable("id") @NonNull Long id) {
+    public String delete(@PathVariable("id") @NonNull Long id) {
         try {
-            repoAsignatura.deleteById(id);    
+            Optional<Asignatura> asignaturaOptional = repoAsignatura.findById(id);
+
+            if (asignaturaOptional.isPresent()) {
+                Asignatura asignatura = asignaturaOptional.get();
+                List<Matricula> matriculas = asignatura.getMatriculas();
+                for (Matricula matricula : matriculas) {
+                    repoMatricula.deleteById(matricula.getId());
+                }
+                repoAsignatura.deleteById(id);
+            } else {
+                return "error"; 
+            }
+
         } catch (Exception e) {
             return "error";
         }
-        
+
         return "redirect:/asignaturas";
     }
 
@@ -84,23 +100,60 @@ public class ControllerAsignatura {
     public String editForm(
         @PathVariable @NonNull Long id,
         Model modelo) {
-
-            Optional<Asignatura> asignatura = 
-                repoAsignatura.findById(id);
-            List<Asignatura> asignaturas = 
-                repoAsignatura.findAll();
-                
-            if (asignatura.isPresent()){
-                modelo.addAttribute("asignatura", asignatura.get());
-                modelo.addAttribute("asignaturas", asignaturas);
-                return "asignaturas/edit";
-            } else {
-                modelo.addAttribute(
-                    "mensaje", 
-                    "Asignatura no encontrada");
-                return "error";
+        Optional<Asignatura> asignatura = repoAsignatura.findById(id);
+        List<Asignatura> asignaturas = repoAsignatura.findAll();
+        if (asignatura.isPresent()){
+            Asignatura asignaturaEntity = asignatura.get();
+            List<Matricula> matriculas = asignaturaEntity.getMatriculas();
+            for (Matricula matricula : matriculas) {
+                repoMatricula.deleteById(matricula.getId());
             }
-            
+
+            modelo.addAttribute("asignatura", asignaturaEntity);
+            modelo.addAttribute("asignaturas", asignaturas);
+            return "asignaturas/edit";
+        } else {
+            modelo.addAttribute("mensaje", "Asignatura no encontrada");
+            return "error";
+        }
+    }
+
+
+    @GetMapping("/{id}/matriculas")
+    public String matriculas(
+        @PathVariable Long id,
+        Model modelo) {
+        
+        Optional<Asignatura> oAsignatura = repoAsignatura.findById(id);
+
+        if (!oAsignatura.isPresent()) {
+            modelo.addAttribute(
+                "mensaje", "La asignatura no existe");
+            return "error";
+        }
+
+        modelo.addAttribute(
+            "asignaturas", repoAsignatura.findAll());
+        modelo.addAttribute(
+             "asignaturaActual", oAsignatura.get());
+        modelo.addAttribute(
+             "matriculas", oAsignatura.get().getMatriculas());
+
+        modelo.addAttribute(
+            "matricula", new Matricula());
+        
+        return "asignaturas/matriculas/matriculas";
+    }
+    
+    @GetMapping("/matriculas/delete/{id}")
+    public String deleteMatricula(
+            @PathVariable("id") @NonNull Long id) {
+        try {
+            repoMatricula.deleteById(id);
+        } catch (Exception e) {
+            return "error";
+        }
+        return "redirect:/asignaturas";
     }
     
 }

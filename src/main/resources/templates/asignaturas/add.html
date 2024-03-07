@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Gestión Académica: Gestión usuarios</title>
+  <th:block th:replace="~{fragmentos/general.html :: headerfiles}"></th:block>
+</head>
+
+<body>
+    <div th:replace="~{fragmentos/general.html :: navigation}"> </div>
+    <div class="container m-3">
+        <form class="row"
+            th:action="@{/asignaturas/add}"
+            th:object="${asignatura}"
+            method="post">
+
+            <div class="mb-3">
+                <label class="form-label" for="nombre">Nombre de la asignatura:</label>
+                <input class="form-control" name="nombre" placeholder="Escriba aquí el nombre"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="curso">Curso de la asignatura:</label>
+                <input class="form-control" name="curso" placeholder="Escriba aquí el curso"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="ciclo">Ciclo de:</label>
+                <input class="form-control" name="ciclo" placeholder="Escriba aquí el ciclo"/>
+            </div>
+            
+            <div>
+                <button class="btn btn-success mt-3" type="submit">Enviar</button>
+            </div>
+        </form>
+    </div>
+    <div th:replace="~{fragmentos/general.html :: footer}"></div>
+</div>
+</body>
+
+</html>

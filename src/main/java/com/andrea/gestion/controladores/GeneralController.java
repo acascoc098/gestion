@@ -26,9 +26,4 @@ public class GeneralController {
         return "index";
     }
 
-    // @GetMapping("/login")
-    // public String showlogin() {
-    //     return "login";
-    // }
-
 }

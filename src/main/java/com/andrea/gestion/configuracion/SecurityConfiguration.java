@@ -20,9 +20,6 @@ public class SecurityConfiguration {
         @Autowired
         private DataSource dataSource;
 
-        // Podemos crear nuestra propia clase para autenticar a los usuarios
-        // o bien usar un AuthenticationManagerBuilder.
-
         @Autowired
         public void configure(AuthenticationManagerBuilder auth) throws Exception {
                 auth.jdbcAuthentication()
@@ -50,7 +47,6 @@ public class SecurityConfiguration {
         @Bean
         public SecurityFilterChain filter(HttpSecurity http) throws Exception {
                 
-                // Con Spring Security 6.2 y 7: usando Lambda DSL
 
                 return http
                         .authorizeHttpRequests((requests) -> requests
@@ -58,7 +54,7 @@ public class SecurityConfiguration {
                                 .permitAll() 
                                 .requestMatchers("/usuarios/**", "asignaturas/**", "/ayuda/**", "/acerca/**")
                                 //.authenticated()
-                                .hasAuthority("admin")
+                                .hasAuthority("gestor")
                         //        .anyRequest().permitAll()
                         // ).headers(headers -> headers
                         //         .frameOptions(frameOptions -> frameOptions

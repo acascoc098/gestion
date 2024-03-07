@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Gestión Académica: Teléfonos de usuarios</title>
+  <th:block th:replace="~{fragmentos/general.html :: headerfiles}"></th:block>
+</head>
+
+<body>  
+  <div th:replace="~{fragmentos/general.html :: navigation}"> </div>
+  <div class="container">
+    <p>Seleccione un usuario para ver sus asignaturas:</p>
+    <form onchange="enviar()"
+        method="get" id="formulario">
+        <div class="form-control">
+            <label for="usuario_actual">Selección del usuario a mostrar:</label>
+            <select class="form-select" id="seleccion">
+                <option 
+                    th:each="usuario : ${usuarios}"
+                    th:value="${usuario.id}"
+                    th:text="|${usuario.nombre} ${usuario.apellido}|"
+                    th:selected="(${usuario.id} == ${usuarioActual.id})?'selected':'false'"
+                >
+                </option>
+            </select>
+        </div>
+    </form>
+    <h4>
+        Listando asignaturas del usario: 
+        <span th:text="${usuarioActual.username}"></span>
+    </h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>Nombre</td>
+                <td>Curso</td> 
+                <td>Ciclo</td>
+                <td>Profesores</td>
+                <td>Alumnos</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="matricula : ${usuarioActual.matriculas}">
+                <td th:text="${matricula.asignatura.nombre}"></td>
+                <td th:text="${matricula.asignatura.curso}"></td>
+                <td th:text="${matricula.asignatura.ciclo}"></td>
+                <td>
+                    <ul>
+                        <li th:each="profesor : ${matricula.asignatura.matriculas.?[usuario.roles.![nombre].contains('profesor')]}">
+                            <span th:text="${profesor.usuario.nombre}"></span> <span th:text="${profesor.usuario.apellido}"></span>
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li th:each="alumno : ${matricula.asignatura.matriculas.?[usuario.roles.![nombre].contains('alumno')]}">
+                            <span th:text="${alumno.usuario.nombre}"></span> <span th:text="${alumno.usuario.apellido}"></span>
+                        </li>
+                    </ul>
+                </td>
+                <nav sec:authorize="hasAuthority('gestor')">
+                    <td>
+                        <a class="btn btn-danger"  
+                            th:href="@{/usuarios/matriculas/delete/{id}(id=${matricula.id})}"
+                            onclick="return confirm('¿Estás seguro de que quieres borrar esta matrícula?');">Borrar</a>
+                    </td>
+                </nav>
+                <nav sec:authorize="hasAuthority('profesor')">
+                    <td>
+                        <span>No tienes permisos</span>
+                    </td>
+                </nav>
+                <nav sec:authorize="hasAuthority('alumno')">
+                    <td>
+                        <span>No tienes permisos</span>
+                    </td>
+                </nav>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function enviar(){
+            let formulario = document.getElementById('formulario');
+            let seleccionado = document.getElementById('seleccion')
+            formulario.action = '/usuarios/'+seleccionado.value+"/matriculas"
+            formulario.submit();
+        }
+    </script>
+    </div>
+  <div th:replace="~{fragmentos/general.html :: footer}"></div>
+</div>
+</body>
+
+</html>

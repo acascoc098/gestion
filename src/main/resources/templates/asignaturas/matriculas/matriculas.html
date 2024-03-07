@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Gestión Académica: Asignaturas de usuarios</title>
+  <th:block th:replace="~{fragmentos/general.html :: headerfiles}"></th:block>
+</head>
+
+<body>  
+  <div th:replace="~{fragmentos/general.html :: navigation}"> </div>
+  <div class="container">
+    <p>Seleccione una asignatura para ver sus usuarios:</p>
+    <form onchange="enviar()"
+        method="get" id="formulario">
+        <div class="form-control">
+            <label for="asignatura_actualctual">Selección de la asignatura a mostrar:</label>
+            <select class="form-select" id="seleccion">
+                <option 
+                    th:each="asignatura : ${asignaturas}"
+                    th:value="${asignatura.id}"
+                    th:text="|${asignatura.nombre} ${asignatura.ciclo} ${asignatura.curso}|"
+                    th:selected="(${asignatura.id} == ${asignaturaActual.id})?'selected':'false'"
+                >
+                </option>
+            </select>
+        </div>
+    </form>
+    <h4>
+        Listando usuarios de la asignatura: 
+        <span th:text="|${asignaturaActual.nombre} ${asignaturaActual.ciclo} ${asignaturaActual.curso}|"></span>
+    </h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td>Nombre</td> 
+                <td>Apellido</td>
+                <td>Rol</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="matricula : ${asignaturaActual.matriculas}">
+                <td th:text="${matricula.usuario.nombre}"></td>
+                <td th:text="${matricula.usuario.apellido}"></td>
+                <td th:text="${matricula.getRolUsuario()}"></td>
+                <td>
+                    <a class="btn btn-danger"  
+                        th:href="@{/asignaturas/matriculas/delete/{id}(id=${matricula.id})}"
+                        onclick="return confirm('¿Estás seguro de que quieres borrar esta matrícula?');">Borrar</a>
+                </td>
+                
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function enviar(){
+            let formulario = document.getElementById('formulario');
+            let seleccionado = document.getElementById('seleccion')
+            formulario.action = '/asignaturas/'+seleccionado.value+"/matriculas"
+            formulario.submit();
+        }
+    </script>
+    </div>
+  <div th:replace="~{fragmentos/general.html :: footer}"></div>
+</div>
+</body>
+
+</html>
