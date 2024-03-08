@@ -87,5 +87,6 @@ _Sube el proyecto como un archivo ZIP._
 Enlace al repositorio:
 [Gestión](https://github.com/acascoc098/gestion.git)
 `Rama dev`
+Se m eha pasado ir guaradando y cambiarme de rama.
 
 Autora: **Andrea Castilla Cocera**
