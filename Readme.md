@@ -86,5 +86,6 @@ _Sube el proyecto como un archivo ZIP._
 ## GIT
 Enlace al repositorio:
 [Gestión](https://github.com/acascoc098/gestion.git)
+`Rama dev`
 
 Autora: **Andrea Castilla Cocera**
